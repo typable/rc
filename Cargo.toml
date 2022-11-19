@@ -1,0 +1,9 @@
+[package]
+name = "rc"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dirs = "4.0.0"
+serde = { version = "1.0.147", features = ["derive"] }
+toml = "0.5.9"
