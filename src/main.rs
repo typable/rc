@@ -40,6 +40,7 @@ fn list_programs(config: &Config) {
             lines.push((id, path));
         }
     }
+    lines.sort();
     info!("");
     info!("total config files: {}", total);
     info!("");
