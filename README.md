@@ -1,6 +1,8 @@
 # rc
 A config file management utility
 
+**"rc" is a tool which allows you to manage your config files without the hassle of remembering the location of all your files.**
+
 ## Installation
 
 The "rc" tool can be installed directly via the cargo CLI.
@@ -13,7 +15,6 @@ The tool can be updated by adding the `--force` flag to the install command.
 
 ## Usage
 
-The "rc" command allows you to manage your config files without the hassle of remembering the location of all your files.<br/>
 After adding your config files to the "rc" configuration, you can now access them by typing "rc" and the name of the program.
 
 ```bash
