@@ -3,6 +3,7 @@ use std::env::Args;
 use std::process::Command;
 
 use rc::prelude::*;
+use regex::Regex;
 
 fn main() {
     if let Err(err) = run() {
@@ -64,11 +65,9 @@ fn show_help() {
 }
 
 fn list_programs(config: &Config) {
-    let mut total = 0;
     let mut width = 2;
     let mut lines = Vec::new();
     if let Some(programs) = &config.programs {
-        total = programs.len();
         for program in programs {
             let (id, path) = program;
             if width < id.len() {
@@ -78,15 +77,11 @@ fn list_programs(config: &Config) {
         }
     }
     lines.sort();
-    info!("");
-    info!("total config files: {}", total);
-    info!("");
-    warn!("{: <width$}  {}", "ID", "PATH", width = width);
+    info!("{: <width$}  {}", "ID", "PATH", width = width);
     for line in lines {
         let (id, path) = line;
         info!("{: <width$}  {}", id, path, width = width);
     }
-    info!("");
 }
 
 fn get_program_path(config: &Config, args: &mut Args) {
@@ -117,5 +112,20 @@ fn find_program(config: &Config, name: &str) -> Option<(String, String)> {
         .as_ref()?
         .iter()
         .find(|(id, _)| name.eq(*id))?;
-    Some((id.to_string(), path.to_string()))
+    Some((id.to_string(), evaluate_vars(path)))
+}
+
+fn evaluate_vars(path: &str) -> String {
+    let re = Regex::new("\\$[\\w_]+").unwrap();
+    let mut evaluated_path = path.to_string();
+    for cap in re.captures_iter(&path) {
+        if let Some(group) = cap.get(0) {
+            let string = group.as_str();
+            let variable = string[1..].to_string();
+            if let Ok(variable_path) = env::var(variable) {
+                evaluated_path = evaluated_path.replace(string, &variable_path);
+            }
+        }
+    }
+    evaluated_path
 }
